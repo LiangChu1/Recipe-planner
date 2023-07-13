@@ -39,7 +39,7 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
     setShowModal(true);
     setRecipeDate(day)
   }
-
+  //ADD to calender
   function handleRecipeSelection(recipe) {
     setShowModal(false);
 
@@ -69,12 +69,11 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
       console.log("FAILED: " + error);
     });
   }
-
+  //DELETE from calendar
   function deleteRecipeDate(id, day){
     const updatedList = favoriteRecipes.map((recipe) => {
       if (recipe.id === id) {
         const filteredDates = recipe.dates.filter((date) => date.toISOString().split('T')[0] !== day);
-        console.log(filteredDates)
         return { ...recipe, dates: filteredDates };
       }
       return recipe;

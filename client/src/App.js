@@ -2,27 +2,40 @@ import { Route, Routes} from 'react-router-dom';
 import './App.css';
 import Header from './Header';
 import React, { useState } from 'react';
-import Home from './Home';
+import Searcher from './Searcher';
 import FavoriteRecipesList from './FavoriteRecipesList';
 import Navigation from './Navigation';
 import Recipe from './Recipe';
-import ShoppingList from './ShoppingList';
+import IngredientMenu from './IngredientMenu';
 import Calendar from './Calendar';
+import IngredientCreator from './IngredientCreator';
+import Home from './Home';
+import IngredientViewer from './IngredientViewer';
+import UserAuthDetails from './UserAuthDetails';
+import SignUp from './SignUp';
+import Login from './Login';
 
 function App() {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
-  const [ingredientList, setIngredientList] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
+  const [ingredientLists, setIngredientLists] = useState([]);
+  const [currUserId, setCurrUserId] = useState("");
+  
   return (
     <div className="App">
       <Header />
       <Navigation />
+      <UserAuthDetails setCurrUserId={setCurrUserId}/>
       <Routes>
-           <Route path='/' element={<Home favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
-           <Route path='/favoriteRecipesList' element={<FavoriteRecipesList favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes} ingredientList={ingredientList} setIngredientList={setIngredientList} totalCost={totalCost} setTotalCost={setTotalCost}/>}/>
+           <Route path="/" element={<Home />}/>
+           <Route path='/searcher' element={<Searcher favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
+           <Route path='/favoriteRecipesList' element={<FavoriteRecipesList favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
            <Route path='/recipe/:id' element={<Recipe/>}/>
-           <Route path='/shoppingList' element={<ShoppingList favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes} ingredientList={ingredientList} setIngredientList={setIngredientList} totalCost={totalCost} setTotalCost={setTotalCost}/>}/>
-           <Route path='/calendar' element={<Calendar favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}></Route>
+           <Route path='/ingredientMenu' element={<IngredientMenu ingredientLists={ingredientLists} setIngredientLists={setIngredientLists}/>}/>
+           <Route path='/ingredientList/new' element={<IngredientCreator favoriteRecipes={favoriteRecipes} ingredientLists={ingredientLists} setIngredientLists={setIngredientLists}/>}/>
+           <Route path='/ingredientList/:index' element={<IngredientViewer setIngredientLists={setIngredientLists}/>}/>
+           <Route path='/calendar' element={<Calendar favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
+           <Route path='/login' element={<Login />}/>
+           <Route path='/signup' element={<SignUp />}/>
       </Routes>
     </div>
   );

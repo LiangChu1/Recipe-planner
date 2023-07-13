@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {recipeDataFetchCall} from "./fetchCalls";
 import './FavoriteRecipesList.css'
 
-function FavoriteRecipesList({ favoriteRecipes, setFavoriteRecipes, ingredientList, setIngredientList, totalCost, setTotalCost }){
+function FavoriteRecipesList({ favoriteRecipes, setFavoriteRecipes }){
     const navigate = useNavigate();
 
     function handleView(id){
@@ -19,36 +19,12 @@ function FavoriteRecipesList({ favoriteRecipes, setFavoriteRecipes, ingredientLi
         });
     }
 
+    //Delete from favorite recipe list
     function deleteFromFavorites(id) {
       // Filter out the recipe with the given recipeId
       const updatedFavorites = favoriteRecipes.filter((recipe) => recipe.id !== id);
       // Update the favoriteRecipes state with the updated list
       setFavoriteRecipes(updatedFavorites);
-    
-      // Filter out the ingredients with the given recipeId
-      const deletedIngredients = ingredientList.filter(
-        (ingredient) => ingredient.recipeId === id
-      );
-      // Calculate the total cost of the deleted ingredients
-      const deletedIngredientsCost = deletedIngredients.reduce(
-        (total, ingredient) => total + ingredient.price,
-        0
-      );
-      // Filter out the ingredients with the given recipeId
-      const updatedIngredientList = ingredientList.filter(
-        (ingredient) => ingredient.recipeId !== id
-      );
-      // Update the ingredientList state with the updated list
-      setIngredientList(updatedIngredientList);
-
-      // Update the totalCost state by subtracting the deleted ingredients cost
-      const updatedTotalCost = (totalCost - deletedIngredientsCost).toFixed(2);
-      if(updatedTotalCost <= 0 || updatedIngredientList.length === 0){
-        setTotalCost(0)
-      }
-      else{
-        setTotalCost(updatedTotalCost);
-      }
     }
 
     return (
