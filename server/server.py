@@ -21,8 +21,8 @@ def get_recipe_data():
     return jsonify(outputData)
 
 
-@app.route('/shoppingList', methods=['POST'])
-def get_shopping_list_data():
+@app.route('/ingredientMenu', methods=['POST'])
+def get_ingredient_list_data():
     url = "https://api.spoonacular.com/recipes/{id}/priceBreakdownWidget.json"
     inputData = request.get_json()
     recipe_id = inputData['recipeId']
@@ -32,7 +32,7 @@ def get_shopping_list_data():
     }
     response = requests.get(url, params=query_params)
     outputData = response.json()
-    print(outputData)
+    #print(outputData)
     return jsonify(outputData)
 
 
@@ -49,7 +49,7 @@ def get_search_data():
     }
     response = requests.get(url, params=query_params)
     outputData = response.json()  # Extract the JSON data from the response
-    print(outputData)
+    #print(outputData)
     return jsonify(outputData)
 
 # Start the server
