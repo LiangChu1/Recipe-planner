@@ -6,7 +6,12 @@ import { useNavigate } from 'react-router-dom';
 
 
 function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => {
+    const today = new Date();
+    const currentWeekSunday = new Date(today);
+    currentWeekSunday.setDate(today.getDate() - today.getDay());
+    return currentWeekSunday;
+  });
   const [recipeDate, setRecipeDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -37,7 +42,7 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
 
   function handleAddRecipeToDay(day) {
     setShowModal(true);
-    setRecipeDate(day)
+    setRecipeDate(day);
   }
   //ADD to calender
   function handleRecipeSelection(recipe) {
@@ -52,7 +57,6 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
       }
       return favRecipe;
     });
-
     setFavoriteRecipes(updatedRecipes);
   }
 
@@ -94,7 +98,7 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
       newDate.setDate(newDate.getDate() + i);
       days.push(newDate);
     }
-  
+    
     // Render each day as a separate element
     const dayElements = days.map((day, index) => {
       const dayFormatted = day.toISOString().split('T')[0]; // Get the date in 'YYYY-MM-DD' format

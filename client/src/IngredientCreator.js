@@ -21,7 +21,7 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
     favoriteRecipes.forEach((recipe) => {
       recipe.dates.forEach((date) => {
         const recipeDate = new Date(date);
-        if (recipeDate >= firstDate && recipeDate <= secondDate) {
+        if (recipeDate.getDate() >= firstDate.getDate() && recipeDate.getDate() <= secondDate.getDate()) {
           const json = JSON.stringify({ recipeId: recipe.id });
           fetch('http://127.0.0.1:5000/ingredientMenu', {
             method: 'POST',
@@ -99,6 +99,18 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
     setCreationStep((prevStepNum) => prevStepNum - 1)
   }
 
+  function handleFirstDateChange(event){
+    let selectedDate = new Date(event.target.value);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    setFirstDate(selectedDate);
+  }
+
+  function handleSecondDateChange(event){
+    let selectedDate = new Date(event.target.value);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    setSecondDate(selectedDate);
+  }
+
   return (
     <>
       <h2> Ingredient List Creator: </h2>
@@ -114,9 +126,9 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
       <div>
         <h3>Pick calendar dates: </h3>
         <label>First Date: </label>
-        <input type='date' onChange={(e) => setFirstDate(new Date(e.target.value))}></input>
+        <input type='date' onChange={handleFirstDateChange}></input>
         <label>Second Date: </label>
-        <input type='date' onChange={(e) => setSecondDate(new Date(e.target.value))}></input>
+        <input type='date' onChange={handleSecondDateChange}></input>
         <button onClick={handleGenerateList} disabled={firstDate === "" && secondDate === ""}>Generate List</button>
       </div>
       )}
