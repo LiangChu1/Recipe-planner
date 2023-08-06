@@ -6,7 +6,7 @@ function Header(){
     return(
         <Link to='/'>
         <h1>
-            Meal Planner
+            Meal Master
         </h1>
         </Link>
     );

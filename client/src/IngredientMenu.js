@@ -1,11 +1,13 @@
 import './IngredientMenu.css';
 import { useNavigate } from 'react-router-dom';
+import { auth, db } from './firebase';
+import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore';
 
 function IngredientMenu({ ingredientLists, setIngredientLists }) {
     const navigate = useNavigate();
 
-    function handleViewList(index, list){
-      navigate(`/ingredientList/${index}`, {state: {ingredientList: list}})
+    function handleViewList(id, list){
+      navigate(`/ingredientList/${id}`, {state: {ingredientList: list}})
     }
 
     function handleCreateList(){
@@ -13,24 +15,50 @@ function IngredientMenu({ ingredientLists, setIngredientLists }) {
     }
 
     //DELETE Ingredient List
-    function handleDeleteList(index){
-      const updatedLists = ingredientLists.filter((list, currindex) => currindex !== index);
-      setIngredientLists(updatedLists); 
+    function handleDeleteList(id){
+      const currUser = auth.currentUser;
+      if(currUser){
+        const userUID = currUser.uid;
+        const ingredientListRef = collection(db, 'users', userUID, 'ingredientLists');
+        const queryRef = query(ingredientListRef, where('id', '==', id));
+
+        getDocs(queryRef)
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              deleteDoc(doc.ref)
+                .then(() => {
+                  console.log("Recipe deleted successfully");
+                  const updatedLists = ingredientLists.filter((list) => list.id !== id);
+                  setIngredientLists(updatedLists); 
+                })
+                .catch((error) => {
+                  console.error("Error deleting recipe: ", error);
+                });
+            });
+          })
+          .catch((error) => {
+            console.error("Error querying recipe: ", error);
+          });
+      }
     }
   
     return (
       <div>
-        <h2>Ingredients Menu</h2>
-        <h3>Your Lists {ingredientLists.length}:</h3>
-        {ingredientLists.map((list, index) => (
-          <div key={index}>
-            <h4>{list.title}</h4>
-            <h4>${parseFloat(list.totalCost).toFixed(2)}</h4>
-            <button onClick={() => handleViewList(index, list)}>View List</button>
-            <button onClick={() => handleDeleteList(index)}>Delete List</button>
-          </div>
-        ))}
-        <button onClick={handleCreateList}>Create New List</button>
+        {auth.currentUser !== null ? (
+        <div>
+          <h2>Ingredients Menu</h2>
+          {ingredientLists.map((list) => (
+            <div key={list.id}>
+              <h4>{list.title}</h4>
+              <button onClick={() => handleViewList(list.id, list)}>View List</button>
+              <button onClick={() => handleDeleteList(list.id)}>Delete List</button>
+            </div>
+          ))}
+          <button onClick={handleCreateList}>Create New List</button>
+        </div>
+        ) : (
+          <p>Please sign in to access your shopping cart.</p>
+        )}
       </div>
     )
 }

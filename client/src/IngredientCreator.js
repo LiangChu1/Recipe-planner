@@ -1,15 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import './IngredientCreator.css';
 import { useState } from 'react';
+import { auth, db } from './firebase';
+import { addDoc, collection } from 'firebase/firestore';
 
-function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
+function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientLists }) {
   const navigate = useNavigate();
   const [userInput, setUserInput] = useState("");
   const [currListTitle, setcurrListTitle] = useState("");
   const [firstDate, setFirstDate] = useState(new Date());
   const [secondDate, setSecondDate] = useState(new Date());
   const [currList, setcurrList] = useState([]);
-  const [totalCost, settotalCost] = useState(0);
   const [creationStep, setCreationStep] = useState(1);
 
   function handleCurrListTitle(){
@@ -17,70 +18,95 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
     setCreationStep((prevStepNum) => prevStepNum+1)
   }
 
+  function formatDate(date) {
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else if (date && date.toDate && typeof date.toDate === 'function') {
+      // If date is a Firestore Timestamp object, convert it to a Date object
+      return formatDate(date.toDate());
+    } else if (typeof date === 'string') {
+      // If date is already a formatted string, return it as is
+      return date;
+    } else {
+      // Invalid or unsupported date format
+      console.error("ERROR: Date not formatted correctly:", date);
+      return null;
+    }
+  }
+
   function handleGenerateList() {
     favoriteRecipes.forEach((recipe) => {
-      recipe.dates.forEach((date) => {
-        const recipeDate = new Date(date);
-        if (recipeDate.getDate() >= firstDate.getDate() && recipeDate.getDate() <= secondDate.getDate()) {
-          const json = JSON.stringify({ recipeId: recipe.id });
-          fetch('http://127.0.0.1:5000/ingredientMenu', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: json,
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data && data.ingredients) {
-                data.ingredients.forEach((newIngredient) => {
-                  setcurrList((prevIngredientList) => {
-                    const existingIngredientIndex = prevIngredientList.findIndex((item) => item.name === newIngredient.name);
-                    if (existingIngredientIndex !== -1) {
-                      // Update the existing ingredient's price and amount value by adding up the existing values to the new values
-                      const updatedList = [...prevIngredientList];
-                      updatedList[existingIngredientIndex] = {
-                        ...updatedList[existingIngredientIndex],
-                        price: updatedList[existingIngredientIndex].price + newIngredient.price,
-                        amountValue: updatedList[existingIngredientIndex].amountValue + newIngredient.amount.us.value,
-                      };
-                      return updatedList;
-                    } else {
-                      // Add the new ingredient to the list
-                      return [
-                        ...prevIngredientList,
-                        {
-                          name: newIngredient.name,
-                          price: newIngredient.price,
-                          amountValue: newIngredient.amount.us.value,
-                          amountUnit: newIngredient.amount.us.unit,
-                          isChecked: false,
-                        },
-                      ];
-                    }
-                  });
-                });
+      recipe.calendarInfo.forEach((dateEle) => {
+        const recipeDate = formatDate(dateEle.date);
+        if (new Date(recipeDate) >= new Date(firstDate) && new Date(recipeDate) <= new Date(secondDate)) {
+          recipe.ingredients.forEach((recipeIngredient) => {
+            const existingIngredient = currList.find(
+              (item) => item.id === recipeIngredient.id
+            );
   
-                settotalCost((prevTotalCost) => prevTotalCost + parseFloat((data.totalCost / 100).toFixed(2)));
-              }
-            })
-            .catch((error) => {
-              console.log('FAILED: ' + error);
-            });
+            if (existingIngredient) {
+              setcurrList((prevList) =>
+                prevList.map((currShoppingListIngredient) => {
+                  if (currShoppingListIngredient.id === recipeIngredient.id) {
+                    return {
+                      ...currShoppingListIngredient,
+                      totalAmount:
+                        currShoppingListIngredient.totalAmount +
+                        recipeIngredient.amountPerServing * dateEle.servingSize,
+                    };
+                  } else {
+                    return currShoppingListIngredient;
+                  }
+                })
+              );
+            } else {
+              setcurrList((prevList) => [
+                ...prevList,
+                {
+                  id: recipeIngredient.id,
+                  name: recipeIngredient.name,
+                  totalAmount: recipeIngredient.amountPerServing * dateEle.servingSize,
+                  unit: recipeIngredient.unit,
+                  isChecked: false,
+                },
+              ]);
+            }
+          });
         }
       });
     });
+  
     setCreationStep((prevStepNum) => prevStepNum + 1);
   }
 
   //ADD new ingredient List
   function handleCreateList(){
-    if(currList.length !== 0 && totalCost !== 0){
-    const newIngredientListEntry = {
-        title: currListTitle,
-        ingredients: currList,
-        totalCost: totalCost
-    }
-    setIngredientLists((prevlists) => [...prevlists, newIngredientListEntry])
-    navigate(-1)
+    if(currList.length !== 0){
+      const newIngredientListEntry = {
+          id: ingredientLists.length + 1,
+          title: currListTitle,
+          ingredients: currList
+      }
+      const currUser = auth.currentUser;
+      if(currUser){
+        const userUID = currUser.uid;
+        const favoritesRef = collection(db, 'users', userUID, 'ingredientLists');
+        addDoc(favoritesRef, newIngredientListEntry)
+          .then((docRef) => {
+            console.log("Ingredient List added with ID: ", docRef.id);
+            setIngredientLists((prevlists) => [...prevlists, newIngredientListEntry])
+            navigate(-1)
+          })
+          .catch((error) => {
+            console.error("Error adding Ingredient List: ", error);
+          });
+      }
+      else{
+        console.log("User didn't sign in yet")
+      }
     }
     else{
         alert("ERROR: No ingredients have been added to new list")
@@ -88,13 +114,12 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
     }
   }
 
-  function handleReverseCreateList() {
+  function handleBackButton() {
     if(creationStep === 2){
       setcurrListTitle("")
     }
     else if(creationStep === 3){
       setcurrList([])
-      settotalCost(0)
     }
     setCreationStep((prevStepNum) => prevStepNum - 1)
   }
@@ -102,13 +127,13 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
   function handleFirstDateChange(event){
     let selectedDate = new Date(event.target.value);
     selectedDate.setDate(selectedDate.getDate() + 1);
-    setFirstDate(selectedDate);
+    setFirstDate(formatDate(selectedDate));
   }
 
   function handleSecondDateChange(event){
     let selectedDate = new Date(event.target.value);
     selectedDate.setDate(selectedDate.getDate() + 1);
-    setSecondDate(selectedDate);
+    setSecondDate(formatDate(selectedDate));
   }
 
   return (
@@ -141,14 +166,11 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
               <li>
               {ingredient.name}
               {" ("}
-              {ingredient.amountValue.toFixed(2)} {ingredient.amountUnit}
+              {ingredient.totalAmount.toFixed(1)} {ingredient.unit}
               {")"}
-              {" - $"}
-              {(ingredient.price / 100).toFixed(2)}
               </li>
           ))}
         </ul>
-        <h3> Your Total so Far: ${parseFloat(totalCost).toFixed(2)}</h3>
       </div>
       
       {creationStep === 3 && (
@@ -156,7 +178,7 @@ function IngredientCreator({ favoriteRecipes, setIngredientLists }) {
       )}
       
       {(creationStep === 2 || creationStep === 3) && (
-        <button onClick={handleReverseCreateList}>Go Back to Previous Step</button>
+        <button onClick={handleBackButton}>Go Back to Previous Step</button>
       )}
       
       <button onClick={() => navigate(-1)}>Exit out of Ingredient Creator Menu</button>
