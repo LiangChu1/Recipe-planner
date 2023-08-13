@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import { Link } from "react-router-dom";
 import { collection, onSnapshot, query } from "firebase/firestore";
+import './UserAuthDetails.css'
 
 function UserAuthDetails({ setFavoriteRecipes, setIngredientLists }) {
   const [authUser, setAuthUser] = useState(null);
@@ -60,12 +61,12 @@ function UserAuthDetails({ setFavoriteRecipes, setIngredientLists }) {
 
 
   return (
-    <div>
+    <div className='auth'>
       {authUser ? (
-        <>
+        <div>
           <p> Welcome {authUser.displayName || authUser.email}</p>
           <button onClick={userSignOut}>Log Out</button>
-        </>
+        </div>
       ) : (
         <div>
           <button>

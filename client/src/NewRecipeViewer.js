@@ -60,17 +60,21 @@ function NewRecipeViewer() {
     navigate(-1);
   }
 
+  function getIngredientAmountPerServing(ingredientId){
+    return nutrition.ingredients.find((tempIngredient) => tempIngredient.id === ingredientId)?.amount || 0
+  }
+
   return (
     <div>
       <h3>{title}</h3>
       <img src={image} alt={title} />
       <h4>Average Cooking Time: {readyInMinutes} Minutes</h4>
       <h4>Recommanded Servings for Recipe: {servings}</h4>
-      <h4>Ingredient List: </h4>
+      <h4>Ingredient List (w/ measurements per serving): </h4>
       <ul>
         {extendedIngredients.filter((ingredient) => ingredient.id !== -1).map((ingredient) => (
           <li key={ingredient.id}>
-            <p>{ingredient.name}</p>
+            <p>{ingredient.name}: {getIngredientAmountPerServing(ingredient.id)} {ingredient.measures.us.unitShort}</p>
           </li>
         ))}
       </ul>

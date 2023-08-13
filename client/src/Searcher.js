@@ -122,24 +122,28 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
 
   const [offSet, setOffSet] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
-  const [currNumber, setCurrNumber] = useState(5);
+  const currNumber = 5;
   
   const [selectedCuisine, setSelectedCuisine] = useState('');
   const [selectedDiet, setSelectedDiet] = useState('');
   const [selectedIntolerances, setSelectedIntolerances] = useState('');
   const [selectedMealTypes, setSelectedMealTypes] = useState('');
+  const [selectedIncludedIngredients, setSelectedIncludedIngredients] = useState([]);
 
   function handleSearch() {
-    if (input !== "" || selectedCuisine !== "" || selectedDiet !== "" || selectedIntolerances !== "" || selectedMealTypes !== "") {
+    if (input !== "" || selectedCuisine !== "" || selectedDiet !== "" || selectedIntolerances !== "" || selectedMealTypes !== "" || selectedIncludedIngredients !== "") {
       const json = JSON.stringify({ 
         input: input,
         cuisine: selectedCuisine,
         meal_type: selectedMealTypes,
         intolerance: selectedIntolerances,
         diet: selectedDiet,
+        includedIngredients: selectedIncludedIngredients,
         number: currNumber, 
         offSet: offSet 
       });
+
+      console.log(json)
 
       fetch('http://127.0.0.1:5000/searchData', {
         method: "POST",
@@ -167,15 +171,21 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
     }
   }
 
-  function handleInput(e) {
-    setOffSet(0)
-    setTotalResults(0)
-    setCurrNumber(5)
-    setInput(e.target.value);
+  function handleInitialSearch(){
+    setOffSet(0);
+    setOutput([]);
+    setTotalResults(0);
+    handleSearch();
   }
 
   function atMaxResults() {
     return (offSet + 1) * currNumber >= totalResults;
+  }
+
+  function getDisplayedRange() {
+    const start = offSet * currNumber + 1;
+    const end = Math.min(start + currNumber - 1, totalResults);
+    return `${start}-${end} out of ${totalResults}`;
   }
 
   function handleBackButton() {
@@ -198,16 +208,17 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
   return (
     <>
       <h2>Recipe Searcher</h2>
-      <input onChange={handleInput} placeholder="Type in Recipe Here" />
+      <input onChange={(e) => setInput(e.target.value)} placeholder="Type in Recipe Here" />
 
       <br/>
-      <AdvancedSearcher setSelectedCuisine={setSelectedCuisine} setSelectedDiet={setSelectedDiet} setSelectedIntolerances={setSelectedIntolerances} setSelectedMealTypes={setSelectedMealTypes}/>
-      <button onClick={handleSearch}>Search</button>
+      <AdvancedSearcher setSelectedCuisine={setSelectedCuisine} setSelectedDiet={setSelectedDiet} setSelectedIntolerances={setSelectedIntolerances} setSelectedMealTypes={setSelectedMealTypes} selectedIncludedIngredients={selectedIncludedIngredients} setSelectedIncludedIngredients={setSelectedIncludedIngredients}/>
+      <button onClick={handleInitialSearch}>Search</button>
 
       {showRecipes && (
         <>
           <OutputRecipes output={output} favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes} />
           <button onClick={handleBackButton} disabled={offSet === 0}>{'<'}</button>
+          <div>{getDisplayedRange()}</div>
           <button onClick={handleNextButton} disabled={atMaxResults()}>{'>'}</button>
         </>
       )}

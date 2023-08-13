@@ -68,6 +68,7 @@ function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientList
                 {
                   id: recipeIngredient.id,
                   name: recipeIngredient.name,
+                  aisle: recipeIngredient.aisle,
                   totalAmount: recipeIngredient.amountPerServing * dateEle.servingSize,
                   unit: recipeIngredient.unit,
                   isChecked: false,
@@ -136,6 +137,33 @@ function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientList
     setSecondDate(formatDate(selectedDate));
   }
 
+  function generateIngredientListByAisle(){
+    const groupedIngredientsList = {};
+
+    currList.forEach((ingredient) => {
+      if (!groupedIngredientsList[ingredient.aisle]) {
+        groupedIngredientsList[ingredient.aisle] = [];
+      }
+      groupedIngredientsList[ingredient.aisle].push(ingredient);
+    });
+
+    return (
+      <div>
+        {Object.keys(groupedIngredientsList).sort()
+        .map((aisle) => (
+          <div key={aisle}>
+            <h4>Aisle: {aisle}</h4>
+            <ul>
+              {groupedIngredientsList[aisle].map((ingredient, index) => (
+                <li key={`${aisle}-${index}`}>{ingredient.name}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <>
       <h2> Ingredient List Creator: </h2>
@@ -161,16 +189,7 @@ function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientList
       <div>
         <h2> Title so far: {currListTitle}</h2>
         <h3> Ingredients Far: </h3>
-        <ul>
-          {currList.map((ingredient) => (
-              <li>
-              {ingredient.name}
-              {" ("}
-              {ingredient.totalAmount.toFixed(1)} {ingredient.unit}
-              {")"}
-              </li>
-          ))}
-        </ul>
+        {generateIngredientListByAisle()}
       </div>
       
       {creationStep === 3 && (

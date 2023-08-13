@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Header.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import Navigation from './Navigation';
 
 function Header(){
+    const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
+    const isHomePage = location.pathname === '/';
+
     return(
-        <Link to='/'>
-        <h1>
-            Meal Master
-        </h1>
-        </Link>
+        <div className={`full_header ${menuOpen ? 'open' : ''}`}>
+            <Link to='/' className='title'>
+                <h1>Meal Master</h1>
+            </Link>
+            {!isHomePage && <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>}
+        </div>
     );
 }
 

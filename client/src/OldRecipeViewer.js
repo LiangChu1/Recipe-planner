@@ -71,12 +71,11 @@ function OldRecipeViewer() {
       <img src={image} alt={title} />
       <h4>Average Cooking Time: {averageCookTime} Minutes</h4>
       <h4>Servings for Recipe: {servingsForDisplay}</h4>
-      <h4>Ingredient List (w/ measurements): </h4>
+      <h4>Ingredient List (w/ serving size measurements): </h4>
       <ul>
         {ingredients.map((ingredient) => (
           <li key={ingredient.id}>
             <p>{ingredient.name}: {(ingredient.amountPerServing * servingsForDisplay).toFixed(1)} {ingredient.unit}</p>
-            <p>Aisle: {ingredient.aisle}</p>
           </li>
         ))}
       </ul>

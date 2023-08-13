@@ -4,7 +4,6 @@ import Header from './Header';
 import React, { useState } from 'react';
 import Searcher from './Searcher';
 import FavoriteRecipesList from './FavoriteRecipesList';
-import Navigation from './Navigation';
 import OldRecipeViewer from './OldRecipeViewer';
 import IngredientMenu from './IngredientMenu';
 import Calendar from './Calendar';
@@ -23,7 +22,6 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <Navigation />
       <UserAuthDetails setFavoriteRecipes={setFavoriteRecipes} setIngredientLists={setIngredientLists}/>
       <Routes>
            <Route path="/" element={<Home />}/>

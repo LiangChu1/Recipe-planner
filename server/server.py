@@ -29,10 +29,11 @@ def get_search_data():
     query = inputData['input']
     offSet = inputData['offSet']
     number = inputData['number']
-    cuisine = inputData['cuisine'],
-    meal_type = inputData['meal_type'],
-    intolerance = inputData['intolerance'],
-    diet = inputData['diet'],
+    cuisine = inputData['cuisine']
+    meal_type = inputData['meal_type']
+    intolerance = inputData['intolerance']
+    diet = inputData['diet']
+    includedIngredients = inputData['includedIngredients']
     query_params = {
         "apiKey": api_key,
         "query": query,
@@ -40,12 +41,12 @@ def get_search_data():
         "type": meal_type,
         "intolerances": intolerance,
         "diet": diet,
+        "includeIngredients" : includedIngredients,
         "number": number,
         'offset': offSet * number
     }
     response = requests.get(url, params=query_params)
     outputData = response.json()
-    #print(outputData)
     return jsonify(outputData)
 
 # Start the server
