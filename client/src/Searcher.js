@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './Searcher.css';
 import { auth, db } from "./firebase";
@@ -6,18 +6,18 @@ import { addDoc, collection } from "firebase/firestore";
 import { recipeDataFetchCall } from "./fetchCalls";
 import AdvancedSearcher from "./AdvancedSearcher";
 
-function OutputRecipes({ output, favoriteRecipes, setFavoriteRecipes }) {
+function OutputRecipes({ recipe, favoriteRecipes, setFavoriteRecipes }) {
   const navigate = useNavigate();
   
-  function handleView(id){
-    const existingRecipeInFavorites = favoriteRecipes.filter((recipe) => recipe.id === id);
+  const handleView = useCallback(() => {
+    const existingRecipeInFavorites = favoriteRecipes.filter((favRecipe) => favRecipe.id === recipe.id);
     if(existingRecipeInFavorites.length === 0){
-      recipeDataFetchCall({id})
+      recipeDataFetchCall({id : recipe.id})
       .then((data) => {
         if (data) {
-          navigate(`/newRecipe/${id}`, {state: {recipe: data}});
+          navigate(`/newRecipe/${recipe.id}`, {state: {recipe: data}});
         } else {
-          navigate(`/newRecipe/${id}`, {state: {recipe: null}});
+          navigate(`/newRecipe/${recipe.id}`, {state: {recipe: null}});
         }
       })
       .catch((error) => {
@@ -28,7 +28,7 @@ function OutputRecipes({ output, favoriteRecipes, setFavoriteRecipes }) {
       navigate(`/oldRecipe/${existingRecipeInFavorites[0].id}`, {state: {recipe: existingRecipeInFavorites[0]}});
     }
     
-  } 
+  }, [recipe.id, favoriteRecipes, navigate]); 
 
   function getNewInstructions(analyzedInstructions){
     const initialInstructionList = analyzedInstructions[0].steps.map((step) => ({
@@ -50,10 +50,10 @@ function OutputRecipes({ output, favoriteRecipes, setFavoriteRecipes }) {
   }
 
   //ADD to favorite recipe list
-  function addToFavorites(id) {
-    const doesRecipeExistInFav = favoriteRecipes.find((recipe) => recipe.id === id);
+  const addToFavorites = useCallback(() => {
+    const doesRecipeExistInFav = favoriteRecipes.find((favRecipe) => favRecipe.id === recipe.id);
     if(!doesRecipeExistInFav){
-      recipeDataFetchCall({id})
+      recipeDataFetchCall({id: recipe.id})
       .then((data) => {
         if (data) {
           const newInstructions = getNewInstructions(data.analyzedInstructions);
@@ -88,27 +88,19 @@ function OutputRecipes({ output, favoriteRecipes, setFavoriteRecipes }) {
     else{
       console.log("Recipe is already saved in favorites")
     }
-  }  
+  }, [recipe.id, favoriteRecipes, setFavoriteRecipes]);
   
   return (
-    <div>
-    {output && output.length > 0 ? (
-      output.map((recipe) => (
-        <div key={recipe.id}>
-          <h3>{recipe.title}</h3>
-          <img src={recipe.image} alt={recipe.title} />
-          <button onClick={() => handleView(recipe.id)}>View Recipe</button>
-          {auth.currentUser !== null && (
-          <button onClick={() => addToFavorites(recipe.id)}>
-            Add to Favorites
-          </button>
-          )}
-        </div>
-      ))
-    ) : (
-      <p>No recipes found.</p>
-    )}
-  </div>
+    <div className="recipeContent">
+      <h3>{recipe.title}</h3>
+      <img src={recipe.image} alt={recipe.title} />
+      <div className="recipeActionButtons"> 
+        <button onClick={handleView}>View Recipe</button>
+        {auth.currentUser !== null && (
+          <button onClick={addToFavorites}>Add to Favorites</button>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -122,7 +114,7 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
 
   const [offSet, setOffSet] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
-  const currNumber = 5;
+  const currNumber = 6;
   
   const [selectedCuisine, setSelectedCuisine] = useState('');
   const [selectedDiet, setSelectedDiet] = useState('');
@@ -142,8 +134,6 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
         number: currNumber, 
         offSet: offSet 
       });
-
-      console.log(json)
 
       fetch('http://127.0.0.1:5000/searchData', {
         method: "POST",
@@ -209,18 +199,28 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
     <>
       <h2>Recipe Searcher</h2>
       <input onChange={(e) => setInput(e.target.value)} placeholder="Type in Recipe Here" />
-
       <br/>
       <AdvancedSearcher setSelectedCuisine={setSelectedCuisine} setSelectedDiet={setSelectedDiet} setSelectedIntolerances={setSelectedIntolerances} setSelectedMealTypes={setSelectedMealTypes} selectedIncludedIngredients={selectedIncludedIngredients} setSelectedIncludedIngredients={setSelectedIncludedIngredients}/>
       <button onClick={handleInitialSearch}>Search</button>
 
       {showRecipes && (
-        <>
-          <OutputRecipes output={output} favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes} />
-          <button onClick={handleBackButton} disabled={offSet === 0}>{'<'}</button>
-          <div>{getDisplayedRange()}</div>
-          <button onClick={handleNextButton} disabled={atMaxResults()}>{'>'}</button>
-        </>
+        <div className="searcherPage">
+          <div className="recipeResults">
+            {output.map((recipe) => (
+                <OutputRecipes
+                  key={recipe.id}
+                  recipe={recipe}
+                  favoriteRecipes={favoriteRecipes}
+                  setFavoriteRecipes={setFavoriteRecipes}
+                />
+            ))}
+          </div>
+          <div className="subMenu">
+            <button onClick={handleBackButton} disabled={offSet === 0}>{'<'}</button>
+            <div>{getDisplayedRange()}</div>
+            <button onClick={handleNextButton} disabled={atMaxResults()}>{'>'}</button>
+          </div>
+        </div>
       )}
     </>
   );

@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { useCallback } from 'react';
 
 function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
   const [currentDate, setCurrentDate] = useState(() => {
@@ -18,17 +19,17 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
   const [servingSize, setServingSize] = useState(1);
   const navigate = useNavigate();
 
-  function handlePrevWeek() {
+  const handlePrevWeek = useCallback(() => {
     let newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() - 7);
     setCurrentDate(newDate);
-  }
+  }, []);
 
-  function handleNextWeek() {
+  const handleNextWeek = useCallback(() =>  {
     let newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + 7);
     setCurrentDate(newDate);
-  }
+  }, []);
 
   function getSecondDate() {
     let newDate = new Date(currentDate);

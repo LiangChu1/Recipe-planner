@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-
+import searcherIcon from "./images/searcher_icon.png";
+import favoritesIcon from "./images/favorites_icon.png";
+import calendarIcon from "./images/calendar_icon.png";
+import shoppingListsIcon from "./images/shoppingLists_icon.png";
+import './Home.css'
 function Home(){
     return (
         <div>
@@ -13,24 +17,24 @@ function Home(){
 
             <h2>Key Features</h2>
             <div className="features">
-                <div>
-                    <h3><Link to='/searcher'>Recipe Searcher</Link></h3>
-                    <img src='client/src/images/searcher_icon.png' alt='searching'/>
+                <div className="feature">
+                    <h3>Recipe Searcher</h3>
+                    <Link to='/searcher'><img src={searcherIcon} alt='searching'/></Link>
                     <p></p>
                 </div> 
-                <div>
-                    <h3><Link to='/favoriteRecipesList'>Favorite Recipes</Link></h3>
-                    <img src='client/src/images/favorites_icon.png' alt='favorites'/>
+                <div className="feature">
+                    <h3>Favorite Recipes</h3>
+                    <Link to='/favoriteRecipesList'><img src={favoritesIcon} alt='favorites'/></Link>
                     <p></p>
                 </div>
-                <div>
-                    <h3><Link to='/calendar'>Meal Planner</Link></h3>
-                    <img src='client/src/images/calendar_icon.png' alt='calendar'/>
+                <div className="feature">
+                    <h3>Meal Planner</h3>
+                    <Link to='/calendar'><img src={calendarIcon} alt='calendar'/></Link>
                     <p></p>
                 </div> 
-                <div>
-                    <h3><Link to='/ingredientMenu'>Shopping Lists</Link></h3>
-                    <img src='client/src/images/shoppingLists_icon.png' alt='shoppingCart'/>
+                <div className="feature">
+                    <h3>Shopping Lists</h3>
+                    <Link to='/ingredientMenu'><img src={shoppingListsIcon} alt='shoppingCart'/></Link>
                     <p></p>
                 </div> 
             </div>

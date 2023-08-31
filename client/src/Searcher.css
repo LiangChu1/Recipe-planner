@@ -1,0 +1,22 @@
+.searcherPage{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.recipeResults{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.subMenu{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
