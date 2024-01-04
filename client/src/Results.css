@@ -1,0 +1,29 @@
+.recipeContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns: one for title/buttons, one for image */
+    gap: 50px; /* Optional: Add some gap between columns */
+    justify-items: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+.recipeTitleAndButtons {
+display: flex;
+flex-direction: column;
+align-items: center;
+max-width: 250px;
+gap: 10px;
+}
+
+.recipeTitleAndButtons h3 {
+margin-bottom: 10px; /* Optional: Add some margin below the title */
+}
+
+.recipeTitleAndButtons button {
+max-width: 100px;
+}
+
+img {
+max-width: 100%; /* Ensure the image doesn't exceed its container width */
+height: auto; /* Maintain the image's aspect ratio */
+}

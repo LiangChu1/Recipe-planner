@@ -64,6 +64,17 @@ function NewRecipeViewer() {
     return nutrition.ingredients.find((tempIngredient) => tempIngredient.id === ingredientId)?.amount || 0
   }
 
+  function filterUniqueIngredients(extendedIngredients) {
+    const uniqueIngredientIds = new Set();
+    return extendedIngredients.filter((ingredient) => {
+        if (ingredient.id !== -1 && !uniqueIngredientIds.has(ingredient.id)) {
+            uniqueIngredientIds.add(ingredient.id);
+            return true;
+        }
+        return false;
+    });
+}
+
   return (
     <div>
       <h3>{title}</h3>
@@ -72,11 +83,13 @@ function NewRecipeViewer() {
       <h4>Recommanded Servings for Recipe: {servings}</h4>
       <h4>Ingredient List (w/ measurements per serving): </h4>
       <ul>
-        {extendedIngredients.filter((ingredient) => ingredient.id !== -1).map((ingredient) => (
-          <li key={ingredient.id}>
-            <p>{ingredient.name}: {getIngredientAmountPerServing(ingredient.id)} {ingredient.measures.us.unitShort}</p>
-          </li>
-        ))}
+          {filterUniqueIngredients(extendedIngredients).map((ingredient) => (
+              <li key={ingredient.id}>
+                  <p>
+                      {ingredient.name}: {getIngredientAmountPerServing(ingredient.id)} {ingredient.measures.us.unitShort}
+                  </p>
+              </li>
+          ))}
       </ul>
       {<NutritionFacts nutrition={nutrition}/>}
       <h4>Instructions</h4>

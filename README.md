@@ -1,7 +1,13 @@
 # Recipe-planner
 
-In-Progress
+How to start server side:
+cd server
+python3 server.py
 
-website usability testing (await functions)
+How to start client side:
+cd client
+npm start
 
-CSS
+Test User:
+email: liang@gmail.com
+password: 123456

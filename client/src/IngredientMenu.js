@@ -57,7 +57,7 @@ function IngredientMenu({ ingredientLists, setIngredientLists }) {
           <button onClick={handleCreateList}>Create New List</button>
         </div>
         ) : (
-          <p>Please sign in to access your shopping cart.</p>
+          <p>Please sign in to access your shopping lists.</p>
         )}
       </div>
     )

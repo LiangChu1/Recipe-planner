@@ -1,109 +1,7 @@
-import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import './Searcher.css';
-import { auth, db } from "./firebase";
-import { addDoc, collection } from "firebase/firestore";
-import { recipeDataFetchCall } from "./fetchCalls";
 import AdvancedSearcher from "./AdvancedSearcher";
-
-function OutputRecipes({ recipe, favoriteRecipes, setFavoriteRecipes }) {
-  const navigate = useNavigate();
-  
-  const handleView = useCallback(() => {
-    const existingRecipeInFavorites = favoriteRecipes.filter((favRecipe) => favRecipe.id === recipe.id);
-    if(existingRecipeInFavorites.length === 0){
-      recipeDataFetchCall({id : recipe.id})
-      .then((data) => {
-        if (data) {
-          navigate(`/newRecipe/${recipe.id}`, {state: {recipe: data}});
-        } else {
-          navigate(`/newRecipe/${recipe.id}`, {state: {recipe: null}});
-        }
-      })
-      .catch((error) => {
-        console.log("FAILED: " + error);
-      });
-    }
-    else{
-      navigate(`/oldRecipe/${existingRecipeInFavorites[0].id}`, {state: {recipe: existingRecipeInFavorites[0]}});
-    }
-    
-  }, [recipe.id, favoriteRecipes, navigate]); 
-
-  function getNewInstructions(analyzedInstructions){
-    const initialInstructionList = analyzedInstructions[0].steps.map((step) => ({
-      number: step.number,
-      description: step.step
-    }));
-    return initialInstructionList;
-  }
-
-  function getNewRecipeIngredientList(extendedIngredientsInfo, nutritionAmountPerServing) {
-    const initialIngredientList = extendedIngredientsInfo.filter((ingredient) => ingredient.id !== -1).map((ingredient) => ({
-      id: ingredient.id,
-      name: ingredient.name,
-      aisle: ingredient.aisle,
-      amountPerServing: nutritionAmountPerServing.find((nutritionIngredient) => nutritionIngredient.id === ingredient.id)?.amount || 0,
-      unit: ingredient.measures.us.unitShort
-    }));
-    return initialIngredientList;
-  }
-
-  //ADD to favorite recipe list
-  const addToFavorites = useCallback(() => {
-    const doesRecipeExistInFav = favoriteRecipes.find((favRecipe) => favRecipe.id === recipe.id);
-    if(!doesRecipeExistInFav){
-      recipeDataFetchCall({id: recipe.id})
-      .then((data) => {
-        if (data) {
-          const newInstructions = getNewInstructions(data.analyzedInstructions);
-          const newRecipeIngredientList = getNewRecipeIngredientList(data.extendedIngredients, data.nutrition.ingredients);
-          const nutrients = data.nutrition.nutrients;
-          const weightPerServing = data.nutrition.weightPerServing;
-          const newRecipe = { id: data.id, title: data.title, image: data.image, recommandedServings: data.servings, averageCookTime: data.readyInMinutes, instructions: newInstructions, ingredients: newRecipeIngredientList, nutrition: {nutrients, weightPerServing}, calendarInfo: [] };
-          const currUser = auth.currentUser;
-          if(currUser){
-            const userUID = currUser.uid;
-            const favoritesRef = collection(db, 'users', userUID, 'favorites');
-            addDoc(favoritesRef, newRecipe)
-              .then((docRef) => {
-                console.log("Recipe added with ID: ", docRef.id);
-                setFavoriteRecipes((prevFavorites) => [...prevFavorites, newRecipe]);
-              })
-              .catch((error) => {
-                console.error("Error adding recipe: ", error);
-              });
-          }
-          else{
-            console.log("User didn't sign in yet")
-          }
-        } else {
-          console.log("Failed to add to favorites")
-        }
-      })
-      .catch((error) => {
-        console.log("FAILED: " + error);
-      });
-    }
-    else{
-      console.log("Recipe is already saved in favorites")
-    }
-  }, [recipe.id, favoriteRecipes, setFavoriteRecipes]);
-  
-  return (
-    <div className="recipeContent">
-      <h3>{recipe.title}</h3>
-      <img src={recipe.image} alt={recipe.title} />
-      <div className="recipeActionButtons"> 
-        <button onClick={handleView}>View Recipe</button>
-        {auth.currentUser !== null && (
-          <button onClick={addToFavorites}>Add to Favorites</button>
-        )}
-      </div>
-    </div>
-  );
-}
-
+import Results from "./Results";
 
 function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
   const [input, setInput] = useState("");
@@ -205,9 +103,9 @@ function Searcher({ favoriteRecipes, setFavoriteRecipes }) {
 
       {showRecipes && (
         <div className="searcherPage">
-          <div className="recipeResults">
+          <div>
             {output.map((recipe) => (
-                <OutputRecipes
+                <Results
                   key={recipe.id}
                   recipe={recipe}
                   favoriteRecipes={favoriteRecipes}
