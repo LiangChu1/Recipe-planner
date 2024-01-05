@@ -26,9 +26,9 @@ function Results({ recipe, favoriteRecipes, setFavoriteRecipes }) {
 
   const handleView = useCallback(() => {
     if (recipeData) {
-      navigate(`/newRecipe/${recipe.id}`, { state: { recipe: recipeData } });
+      navigate(`/recipeViewer/${recipe.id}`, { state: { recipe: recipeData } });
     } else {
-      navigate(`/newRecipe/${recipe.id}`, { state: { recipe: null } });
+      navigate(`/recipeViewer/${recipe.id}`, { state: { recipe: null } });
     }
   }, [recipe.id, navigate, recipeData]);
 
@@ -109,7 +109,7 @@ function Results({ recipe, favoriteRecipes, setFavoriteRecipes }) {
                 id: ingredient.id,
                 name: ingredient.name,
                 aisle: ingredient.aisle,
-                amountPerServing: nutritionAmountPerServing.find((nutritionIngredient) => nutritionIngredient.id === ingredient.id)?.amount || 0,
+                amount: nutritionAmountPerServing.find((nutritionIngredient) => nutritionIngredient.id === ingredient.id)?.amount || 0,
                 unit: ingredient.measures.us.unitShort
             };
         })

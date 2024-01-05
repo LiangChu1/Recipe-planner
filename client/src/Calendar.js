@@ -17,6 +17,8 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
   const [showModal, setShowModal] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [servingSize, setServingSize] = useState(1);
+  const [isChangingServingSize, setIsChangingServingSize] = useState(false);
+
   const navigate = useNavigate();
 
   const handlePrevWeek = useCallback(() => {
@@ -110,7 +112,7 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
         ...existingRecipeInFavorites[0],
         servingSizeForDay: servingSize
       };
-      navigate(`/oldRecipe/${modifiedRecipe.id}`, { state: { recipe: modifiedRecipe } });
+      navigate(`/recipeViewer/${modifiedRecipe.id}`, { state: { recipe: modifiedRecipe } });
     }
   }
 
@@ -155,6 +157,52 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
         console.error("Error querying recipe: ", error);
       });
     }
+  }
+
+  function updateServingSizeForRecipeOfDay(id, day, newServingSize){
+      const updatedList = favoriteRecipes.map((recipe) => {
+        if (recipe.id == id){
+          const recipeNeededToUpdateOnDay = recipe.calendarInfo.map((date) => {
+            if (formatDate(date.date) == formatDate(day)){
+              return {...date, servingSize: newServingSize};
+            }
+            return date;
+          });
+          return {...recipe, calendarInfo: recipeNeededToUpdateOnDay};
+        }
+        return recipe;
+      });
+
+      setFavoriteRecipes(updatedList);
+
+      const currUser = auth.currentUser;
+      if(currUser){
+        const userUID = currUser.uid;
+        const favoritesRef = collection(db, 'users', userUID, 'favorites');
+        const queryRef = query(favoritesRef, where('id', '==', id));
+        
+        getDocs(queryRef)
+        .then((querySnapshot) => {
+          if(!querySnapshot.empty){
+            const recipeRef = querySnapshot.docs[0].ref;
+            const updatedRecipe = updatedList.find((recipe) => recipe.id === id);
+            updateDoc(recipeRef, {calendarInfo: updatedRecipe.calendarInfo}).then(() => {
+              console.log('Recipe calendar Info updated successfully!');
+            })
+            .catch((error) => {
+              console.error('Error updating recipe calendar Info: ', error);
+            })
+          }
+          else{
+            console.error('Recipe not found in favorites.')
+          }
+        })
+        .catch((error) => {
+          console.error("Error querying recipe: ", error);
+        });
+      }
+
+      setIsChangingServingSize(false);
   }
 
   function formatDate(date) {
@@ -243,14 +291,32 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
             const matchingDates = recipe.calendarInfo.filter(
               (dateEle) => formatDate(dateEle.date) === dayFormatted
             );
-  
             if (matchingDates.length > 0) {
               return (
                 <div key={`${recipe.id}-${dayFormatted}`}>
                   <h3>{recipe.title}</h3>
                   {matchingDates.map((dateEle) => (
                     <div key={`${recipe.id}-${dayFormatted}-${dateEle.servingSize}`}>
-                      <p>Serving Size: {dateEle.servingSize}</p>
+                      {isChangingServingSize ? (
+                        <div>
+                          <input
+                            type="number"
+                            value={servingSize}
+                            min={1}
+                            onChange={(e) => setServingSize(e.target.value)}
+                          />
+                          <button onClick={() => updateServingSizeForRecipeOfDay(recipe.id, dayFormatted, servingSize)}>
+                            Save Change
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p>Serving Size: {dateEle.servingSize}</p>
+                          <button onClick={() => setIsChangingServingSize(true)}>
+                            Change Serving Size
+                          </button>
+                        </div>
+                      )}
                       <img src={recipe.image} alt={recipe.title} />
                       <button onClick={() => handleView(recipe.id, dateEle.servingSize)}>View Recipe</button>
                       <button onClick={() => deleteRecipeDate(recipe.id, dayFormatted, dateEle.servingSize)}>

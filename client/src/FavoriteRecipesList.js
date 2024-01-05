@@ -9,7 +9,7 @@ function FavoriteRecipesList({ favoriteRecipes, setFavoriteRecipes }){
     function handleView(id){
       const existingRecipeInFavorites = favoriteRecipes.filter((recipe) => recipe.id === id);
       if(existingRecipeInFavorites){
-        navigate(`/oldRecipe/${existingRecipeInFavorites[0].id}`, {state: {recipe: existingRecipeInFavorites[0]}});
+        navigate(`/recipeViewer/${existingRecipeInFavorites[0].id}`, {state: {recipe: existingRecipeInFavorites[0]}});
       }
     }
 

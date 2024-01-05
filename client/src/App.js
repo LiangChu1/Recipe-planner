@@ -4,7 +4,6 @@ import Header from './Header';
 import React, { useState } from 'react';
 import Searcher from './Searcher';
 import FavoriteRecipesList from './FavoriteRecipesList';
-import OldRecipeViewer from './OldRecipeViewer';
 import IngredientMenu from './IngredientMenu';
 import Calendar from './Calendar';
 import IngredientCreator from './IngredientCreator';
@@ -13,7 +12,7 @@ import IngredientViewer from './IngredientViewer';
 import UserAuthDetails from './UserAuthDetails';
 import SignUp from './SignUp';
 import Login from './Login';
-import NewRecipeViewer from './NewRecipeViewer';
+import RecipeViewer from './RecipeViewer';
 
 function App() {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
@@ -27,8 +26,7 @@ function App() {
            <Route path="/" element={<Home />}/>
            <Route path='/searcher' element={<Searcher favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
            <Route path='/favoriteRecipesList' element={<FavoriteRecipesList favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>
-           <Route path='/oldRecipe/:id' element={<OldRecipeViewer/>}/>
-           <Route path='/newRecipe/:id' element={<NewRecipeViewer/>}/>
+           <Route path='/recipeViewer/:id' element={<RecipeViewer/>}/>
            <Route path='/ingredientMenu' element={<IngredientMenu ingredientLists={ingredientLists} setIngredientLists={setIngredientLists}/>}/>
            <Route path='/ingredientList/new' element={<IngredientCreator favoriteRecipes={favoriteRecipes} ingredientLists={ingredientLists} setIngredientLists={setIngredientLists}/>}/>
            <Route path='/ingredientList/:index' element={<IngredientViewer setIngredientLists={setIngredientLists}/>}/>

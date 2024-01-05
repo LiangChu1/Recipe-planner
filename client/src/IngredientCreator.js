@@ -55,7 +55,7 @@ function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientList
                       ...currShoppingListIngredient,
                       totalAmount:
                         currShoppingListIngredient.totalAmount +
-                        recipeIngredient.amountPerServing * dateEle.servingSize,
+                        recipeIngredient.amount * dateEle.servingSize,
                     };
                   } else {
                     return currShoppingListIngredient;
@@ -69,7 +69,7 @@ function IngredientCreator({ favoriteRecipes, ingredientLists, setIngredientList
                   id: recipeIngredient.id,
                   name: recipeIngredient.name,
                   aisle: recipeIngredient.aisle,
-                  totalAmount: recipeIngredient.amountPerServing * dateEle.servingSize,
+                  totalAmount: recipeIngredient.amount * dateEle.servingSize,
                   unit: recipeIngredient.unit,
                   isChecked: false,
                 },
