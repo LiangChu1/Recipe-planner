@@ -1,6 +1,7 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "./firebase";
+import './Login.css'
 
 function Login () {
   const [email, setEmail] = useState("");
@@ -21,8 +22,8 @@ function Login () {
 
   return (
     <div className="sign-in-container">
+      <h1>Login</h1>
       <form onSubmit={handleSignIn}>
-        <h1>Log In to your Account</h1>
         <input
           type='email'
           placeholder='Enter your email'

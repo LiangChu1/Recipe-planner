@@ -1,0 +1,66 @@
+.auth{
+    display: flex;
+    background-color: transparent;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-in-message, .auth-buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.sign-in-message > h5{
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    text-align: center;
+    color: white;
+}
+
+.sign-in-message > button{
+   background-color: red;
+   color: white;
+   width: 100%;
+}
+
+.sign-in-message > button:hover{
+    text-decoration: underline;
+}
+
+.sign-in-message > button:active{
+    background-color: darkred;
+}
+
+.auth-buttons > button{
+    background-color: greenyellow;
+    width: 130%;
+}
+
+.auth-buttons > button > a{
+    color: black;
+    text-decoration: none;
+    width: 100%;
+}
+
+.auth-buttons > button > a:hover{
+    color: black;
+    text-decoration: underline;
+}
+
+.auth-buttons > button:active{
+    background-color: darkolivegreen;
+}
+
+.auth-buttons > button > a:active{
+    color: white;
+}
+
+
+@media screen and (max-width: 300px) {
+    .auth-buttons > button{
+        width: 100%;
+    }
+}

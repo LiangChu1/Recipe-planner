@@ -3,40 +3,43 @@ import searcherIcon from "./images/searcher_icon.png";
 import favoritesIcon from "./images/favorites_icon.png";
 import calendarIcon from "./images/calendar_icon.png";
 import shoppingListsIcon from "./images/shoppingLists_icon.png";
+import mainPageImg from "./images/home_screen_image.png";
 import './Home.css'
 function Home(){
     return (
-        <div>
-            <p>
-            Welcome to Meal Master, your ultimate tool for effortless meal planning and delicious dining! 
-            Whether you're a seasoned chef or just starting out in the kitchen, our user-friendly platform empowers you to create, organize, and enjoy a week's worth of delectable meals.
-            Say goodbye to mealtime stress and hello to culinary inspiration. 
-            With Meal Master, you can easily browse through a vast collection of chef-curated recipes, tailor your meal preferences, and generate personalized meal plans that suit your taste, dietary needs, and busy schedule. 
-            From breakfast to dinner, our intuitive interface streamlines your cooking journey, making it a breeze to plan, shop for ingredients, and execute mouthwatering dishes.
-            </p>
+        <div className="homePage">
+            <div className="homePage-img-container">
+            <div className="homePage-img" style={{ backgroundImage: `url(${mainPageImg})` }}/>
+            </div>
+            <div className="intro">
+                <h1>Welcome to Meal Master</h1>
+                <h2>Your ultimate tool for effortless meal planning and delicious dining!</h2>
+            </div>
 
-            <h2>Key Features</h2>
-            <div className="features">
-                <div className="feature">
-                    <h3>Recipe Searcher</h3>
-                    <Link to='/searcher'><img src={searcherIcon} alt='searching'/></Link>
-                    <p></p>
-                </div> 
-                <div className="feature">
-                    <h3>Favorite Recipes</h3>
-                    <Link to='/favoriteRecipesList'><img src={favoritesIcon} alt='favorites'/></Link>
-                    <p></p>
+            <div className="moreInfo">
+                <h2>Start Meal Planning Now:</h2>
+                <div className="featureListing">
+                    <div className="feature">
+                        <h3>Recipe Searcher</h3>
+                        <Link to='/searcher'><img src={searcherIcon} alt='searching'/></Link>
+                        <p>A convenient way to discover and explore a variety of dishes.</p>
+                    </div> 
+                    <div className="feature">
+                        <h3>Favorite Recipes</h3>
+                        <Link to='/favoriteRecipesList'><img src={favoritesIcon} alt='favorites'/></Link>
+                        <p>Save and organize your preferred recipes in one central location for quick and easy access.</p>
+                    </div>
+                    <div className="feature">
+                        <h3>Meal Planner</h3>
+                        <Link to='/calendar'><img src={calendarIcon} alt='calendar'/></Link>
+                        <p>Plan your meals by using the provided visual calendar</p>
+                    </div> 
+                    <div className="feature">
+                        <h3>Shopping Lists</h3>
+                        <Link to='/ingredientMenu'><img src={shoppingListsIcon} alt='shoppingCart'/></Link>
+                        <p>Create and manage your own shopping lists based on selected recipes throughout the weeks.</p>
+                    </div> 
                 </div>
-                <div className="feature">
-                    <h3>Meal Planner</h3>
-                    <Link to='/calendar'><img src={calendarIcon} alt='calendar'/></Link>
-                    <p></p>
-                </div> 
-                <div className="feature">
-                    <h3>Shopping Lists</h3>
-                    <Link to='/ingredientMenu'><img src={shoppingListsIcon} alt='shoppingCart'/></Link>
-                    <p></p>
-                </div> 
             </div>
         </div>
     )

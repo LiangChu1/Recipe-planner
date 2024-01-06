@@ -27,8 +27,14 @@ function SignUp () {
 
   return (
     <div className="sign-in-container">
+      <h1>Create Account</h1>
       <form onSubmit={handleSignUp}>
-        <h1>Create Account</h1>
+        <input 
+          type='text'
+          placeholder='Enter your name'
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
         <input
           type='email'
           placeholder='Enter your email'
@@ -40,12 +46,6 @@ function SignUp () {
           placeholder='Enter your password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-        />
-        <input 
-          type='text'
-          placeholder='Enter your name'
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
         />
         <button type="submit">Sign Up</button>
       </form>

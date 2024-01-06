@@ -14,9 +14,6 @@ function UserAuthDetails({ setFavoriteRecipes, setIngredientLists }) {
         setAuthUser(user);
         loadUsersRecipes(user.uid);
         loadUserIngredientLists(user.uid);
-      } else {
-        setAuthUser(null);
-        setFavoriteRecipes([]);
       }
     });
 
@@ -25,50 +22,47 @@ function UserAuthDetails({ setFavoriteRecipes, setIngredientLists }) {
     };
   });
 
-  function loadUsersRecipes(userId){
-    const userRecipesRef = collection(db, 'users', userId, 'favorites');
-    const userFavoritesQuery = query(userRecipesRef);
+  function loadData(userId, collectionName, setData){
+    const userRef = collection(db, 'users', userId, collectionName);
+    const userQuery = query(userRef);
 
-    onSnapshot(userFavoritesQuery, (snapshot) => {
-      const currFavoriteRecipes = [];
+    onSnapshot(userQuery, (snapshot) => {
+      const data = [];
       snapshot.forEach((doc) => {
-        currFavoriteRecipes.push({ ...doc.data() });
+        data.push({ ...doc.data() });
       });
-      setFavoriteRecipes(currFavoriteRecipes);
+      setData(data);
     });
   }
 
-  function loadUserIngredientLists(userId){
-    const userIngredientListsRef = collection(db, 'users', userId, 'ingredientLists');
-    const userIngredientListsQuery = query(userIngredientListsRef);
+  function loadUsersRecipes(userId){
+    loadData(userId, 'favorites', setFavoriteRecipes);
+  }
 
-    onSnapshot(userIngredientListsQuery, (snapshot) => {
-      const currIngredientLists = [];
-      snapshot.forEach((doc) => {
-        currIngredientLists.push({ ...doc.data() });
-      });
-      setIngredientLists(currIngredientLists);
-    });
+  function loadUserIngredientLists(userId){
+    loadData(userId, 'ingredientLists', setIngredientLists);
   }
 
   function userSignOut() {
     signOut(auth)
       .then(() => {
         console.log("sign out successful");
+        setAuthUser(null);
+        setFavoriteRecipes([]);
+        setIngredientLists([]);
       })
       .catch((error) => console.log(error));
   };
 
-
   return (
     <div className='auth'>
       {authUser ? (
-        <div>
-          <p> Welcome {authUser.displayName || authUser.email}</p>
+        <div className="sign-in-message">
+          <h5> Welcome, {authUser.displayName || authUser.email}</h5>
           <button onClick={userSignOut}>Log Out</button>
         </div>
       ) : (
-        <div>
+        <div className="auth-buttons">
           <button>
             <Link to="/login">Log In</Link>
           </button>

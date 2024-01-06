@@ -1,6 +1,7 @@
 import './Navigation.css'
 import {Link} from 'react-router-dom';
-function Navigation({ menuOpen, setMenuOpen }) {
+import UserAuthDetails from './UserAuthDetails';
+function Navigation({ menuOpen, setMenuOpen, setFavoriteRecipes, setIngredientLists }) {
     
     function toggleMenu(){
         setMenuOpen(!menuOpen)
@@ -17,6 +18,7 @@ function Navigation({ menuOpen, setMenuOpen }) {
                 <li className='nav-link' onClick={toggleMenu}><Link to='/favoriteRecipesList'>Favorite Recipes</Link></li>
                 <li className='nav-link' onClick={toggleMenu}><Link to='/calendar'>Meal Planner</Link></li>
                 <li className='nav-link' onClick={toggleMenu}><Link to='/ingredientMenu'>Shopping Lists</Link></li>
+                <li className='nav-link'><UserAuthDetails setFavoriteRecipes={setFavoriteRecipes} setIngredientLists={setIngredientLists} /></li>
             </ul>
         </nav>
     );

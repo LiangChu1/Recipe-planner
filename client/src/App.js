@@ -20,8 +20,7 @@ function App() {
   
   return (
     <div className="App">
-      <Header />
-      <UserAuthDetails setFavoriteRecipes={setFavoriteRecipes} setIngredientLists={setIngredientLists}/>
+      <Header setFavoriteRecipes={setFavoriteRecipes} setIngredientLists={setIngredientLists}/>
       <Routes>
            <Route path="/" element={<Home />}/>
            <Route path='/searcher' element={<Searcher favoriteRecipes={favoriteRecipes} setFavoriteRecipes={setFavoriteRecipes}/>}/>

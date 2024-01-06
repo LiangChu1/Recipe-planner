@@ -9,6 +9,7 @@
 .title{
     text-decoration: none;
     color: white;
+    text-align: center;
     transition: color 0.3s;
 }
 
@@ -22,7 +23,7 @@
     font-size: 48px;
 }
 
-@media screen and (max-width: 870px) {
+@media screen and (max-width: 1200px) {
     .full_header.open{
         flex-direction: column;
     }
@@ -34,7 +35,7 @@
 
 @media screen and (max-width: 480px) {
     .title > h1{
-        font-size: 32px;
+        font-size: 28px;
     }
 }
 

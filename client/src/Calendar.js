@@ -161,9 +161,9 @@ function Calendar({ favoriteRecipes, setFavoriteRecipes }) {
 
   function updateServingSizeForRecipeOfDay(id, day, newServingSize){
       const updatedList = favoriteRecipes.map((recipe) => {
-        if (recipe.id == id){
+        if (recipe.id === id){
           const recipeNeededToUpdateOnDay = recipe.calendarInfo.map((date) => {
-            if (formatDate(date.date) == formatDate(day)){
+            if (formatDate(date.date) === formatDate(day)){
               return {...date, servingSize: newServingSize};
             }
             return date;
